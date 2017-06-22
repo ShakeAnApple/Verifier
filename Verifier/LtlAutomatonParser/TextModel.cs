@@ -46,7 +46,7 @@ namespace Verifier.LtlAutomatonParser.TextModel
 	class condition
 	{
 		public StringTreeNode _rawTreeNode;
-		public exprGroup exprGroup;
+		public exprSeq exprSeq;
 	}
 	
 	class not
@@ -166,7 +166,7 @@ namespace Verifier.LtlAutomatonParser.TextModel
 		{
 			return new condition() {
 				_rawTreeNode = node,
-				exprGroup = node.Childs.Where(n => n.Rule.Name == "exprGroup").Select(n => MapExprGroup(n)).FirstOrDefault(),
+				exprSeq = node.Childs.Where(n => n.Rule.Name == "exprSeq").Select(n => MapExprSeq(n)).FirstOrDefault(),
 			};
 		}
 		

@@ -14,12 +14,23 @@ namespace Verifier
         class PathItem
         {
             public ITlaState State { get; private set; }
+            public ITlaTransition FromTransition { get; private set; }
             public PathItem Prev { get; private set; }
 
-            public PathItem(ITlaState state, PathItem prev)
+            public PathItem(ITlaState state, PathItem prev, ITlaTransition fromTransition)
             {
                 this.State = state;
                 this.Prev = prev;
+                this.FromTransition = fromTransition;
+            }
+
+            public bool IsAny(ITlaState state)
+            {
+                for (var s = this; s != null; s = s.Prev)
+                    if (s.State == state)
+                        return true;
+
+                return false;
             }
         }
 
@@ -36,29 +47,53 @@ namespace Verifier
         public LinkedList<ITlaState> Verify(TlaAutomaton ltl)
         {
             var automaton = this.Intersect(_modelAutomaton, ltl);
-            automaton.SaveAsDgmlGraph(@"c:\tmp\v.dgml");
+            automaton.Optimize();
+            var xg = automaton.ToXmlGraph();
 
-            var path = automaton.InitialStates.Select(initState => this.RunAutomatonFrom(initState)).FirstOrDefault(l => l != null);
+            PathItem cycle = null;
+            var path = automaton.InitialStates.Select(initState => this.RunAutomatonFrom(initState, step => {
+                if (!step.State.IsAccepting)
+                    return false;
+
+                cycle = this.RunAutomatonFrom(step.State, cycleStep => step.IsAny(cycleStep.State));
+                return cycle != null;
+            })).FirstOrDefault(l => l != null);
 
             if (path != null)
             {
+                for (var item = cycle; item != null; item = item.Prev)
+                {
+                    xg[item.State.Name].Background = "Blue";
+
+                    if (item.FromTransition != null)
+                        xg[item.FromTransition.FromState.Name].GetConnectionTargets().First(l => l.Target.Id == item.FromTransition.ToState.Name).Color = "Blue";
+                }
+
                 var list = new LinkedList<ITlaState>();
                 for (var item = path; item != null; item = item.Prev)
+                {
+                    xg[item.State.Name].Background = "Green";
                     list.AddFirst(item.State);
 
+                    if (item.FromTransition != null)
+                        xg[item.FromTransition.FromState.Name].GetConnectionTargets().First(l => l.Target.Id == item.FromTransition.ToState.Name).Color = "Green";
+                }
+
+                xg.MakeXmlDocument().Save(@"v:\v.dgml");
                 return list;
             }
             else
             {
+                xg.MakeXmlDocument().Save(@"v:\v.dgml");
                 return null;
             }
         }
 
-        private PathItem RunAutomatonFrom(ITlaState initState)
+        private PathItem RunAutomatonFrom(ITlaState initState, Func<PathItem, bool> finishCondition)
         {
             var handledStateIds = new SortedSet<int>();
             var stack = new Stack<PathItem>();
-            stack.Push(new PathItem(initState, null));
+            stack.Push(new PathItem(initState, null, null));
 
             while (stack.Count > 0)
             {
@@ -71,8 +106,8 @@ namespace Verifier
 
                     foreach (var transition in item.State.Outgoings)
                     {
-                        var newItem = new PathItem(transition.ToState, item);
-                        if (transition.ToState.IsAccepting)
+                        var newItem = new PathItem(transition.ToState, item, transition);
+                        if (finishCondition(newItem))
                             return newItem;
 
                         stack.Push(newItem);

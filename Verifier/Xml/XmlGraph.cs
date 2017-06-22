@@ -51,16 +51,27 @@ namespace Verifier.Xml
                 var node = nodes.AppendChild(doc.CreateElement("Node"));
                 node.Attributes.Append(doc.CreateAttribute("Id")).Value = item.Id;
 
-                if (item.Text != null)
+                if (!string.IsNullOrWhiteSpace(item.Text))
                     node.Attributes.Append(doc.CreateAttribute("Label")).Value = item.Text;
+
+                if (!string.IsNullOrWhiteSpace(item.Background))
+                    node.Attributes.Append(doc.CreateAttribute("Background")).Value = item.Background;
 
                 foreach (var target in item.GetConnectionTargets())
                 {
                     var link = links.AppendChild(doc.CreateElement("Link"));
                     link.Attributes.Append(doc.CreateAttribute("Source")).Value = item.Id;
                     link.Attributes.Append(doc.CreateAttribute("Target")).Value = target.Target.Id;
-                    link.Attributes.Append(doc.CreateAttribute("Label")).Value = target.Text;
                     link.Attributes.Append(doc.CreateAttribute("Index")).Value = (lc++).ToString();
+
+                    if (!string.IsNullOrWhiteSpace(target.Text))
+                        link.Attributes.Append(doc.CreateAttribute("Label")).Value = target.Text;
+
+                    if (!string.IsNullOrWhiteSpace(target.Color))
+                    {
+                        link.Attributes.Append(doc.CreateAttribute("Stroke")).Value = target.Color;
+                        link.Attributes.Append(doc.CreateAttribute("StrokeThickness")).Value = "3";
+                    }
                 }
             }
 
@@ -79,6 +90,7 @@ namespace Verifier.Xml
 
         public string Id { get; private set; }
         public string Text { get; set; }
+        public string Background { get; set; }
 
         public XmlGraphNode(XmlGraph owner, string id)
         {
@@ -129,6 +141,7 @@ namespace Verifier.Xml
     {
         public XmlGraphNode Target { get; private set; }
         public string Text { get; set; }
+        public string Color { get; set; }
 
         public XmlGraphLink(XmlGraphNode target)
         {

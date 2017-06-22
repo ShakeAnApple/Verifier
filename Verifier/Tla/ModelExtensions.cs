@@ -8,13 +8,13 @@ namespace Verifier.Tla
 {
     static class ModelExtensions
     {
-        public static string LowerFirstCharacter(this string str)
-        {
-            if (string.IsNullOrWhiteSpace(str))
-                return str;
+        //public static string LowerFirstCharacter(this string str)
+        //{
+        //    if (string.IsNullOrWhiteSpace(str))
+        //        return str;
 
-            return char.ToLower(str[0]) + str.Substring(1);
-        }
+        //    return char.ToLower(str[0]) + str.Substring(1);
+        //}
 
         public static TlaAutomaton ToTlaAutomaton(this Automaton automaton, bool useTransitionConditions)
         {

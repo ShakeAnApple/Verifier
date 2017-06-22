@@ -1,0 +1,29 @@
+﻿grammar PolinaCompiler.Peg.Def.TextModel start grammar skip omitPattern;
+
+identifier: "[a-zA-Z_][a-zA-Z_0-9]*";
+regex: "\\\"[^\\\"\\\\]*(?:\\\\.[^\\\"\\\\]*)*\\\"";
+chars: "'[^']*'";
+check: '&' trivial;
+not: '^' trivial;
+group: '(' exprsSeq ')';
+
+num: "[0-9]+";
+quantorSpec: num | (num ',') | (num ',' num) | (',' num);
+quantor: '*'|'+'|'?'|('{' quantorSpec '}');
+
+number: trivial quantor;
+alternatives: altItem ('|' altItem)+;
+altItem: number|trivial;
+
+trivial: identifier|regex|chars|check|not|group;
+
+exprsSeq: exprItem+;
+exprItem: alternatives|number|trivial;
+
+nsName: identifier ('.' identifier)*;
+header: 'grammar' nsName? 'start' identifier ('skip' identifier)? ';';
+rule: identifier ':' exprsSeq ';';
+
+grammar: header rule+;
+
+omitPattern: "([\s]*)(/\*(?>(?:(?>[^*]+)|\*(?!/))*)\*/[\s]*)*";

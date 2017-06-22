@@ -33,25 +33,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IKVM.OpenJDK.Core">
-      <HintPath>..\..\..\..\Tools\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="jltl2ba">
-      <HintPath>..\..\jltl2ba\src\jltl2ba\jltl2ba.dll</HintPath>
-    </Reference>
-    <Reference Include="JVM">
-      <HintPath>..\..\..\..\Tools\ikvm-7.2.4630.5\bin-x64\JVM.DLL</HintPath>
-    </Reference>
-    <Reference Include="ltl2ba">
-      <HintPath>..\..\ltl2ba4j\ltl2ba.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ltl2ba" />
     <None Include="LtlAutomatonParser\RegenDefTextModel.bat" />
     <None Include="Xml\chart.xsd">
       <SubType>Designer</SubType>
@@ -98,16 +86,8 @@
     <Content Include="AutomataExample.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="ltl2ba.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="ltl2ba.exe" />
     <Content Include="LtlAutomatonParser\Grammar.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\PolinaCompiler\PolinaCompiler.Peg\PolinaCompiler.Peg.csproj">
-      <Project>{8d265d6e-1f8b-4913-a1ed-6faeb2eedd63}</Project>
-      <Name>PolinaCompiler.Peg</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="LtlParserResources.resx">
@@ -116,6 +96,11 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\PolinaCompiler.Peg\PolinaCompiler.Peg.csproj">
+      <Project>{8d265d6e-1f8b-4913-a1ed-6faeb2eedd63}</Project>
+      <Name>PolinaCompiler.Peg</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -65,9 +65,9 @@ namespace Verifier.LtlAutomatonParser
         {
             TlaFormula result;
             if (useTransitionConditions)
-                result = new TlaTransitionConditionFormula(cond.exprGroup.exprSeq.TranslateToConditionExpr());
+                result = new TlaTransitionConditionFormula(cond.exprSeq.TranslateToConditionExpr());
             else
-                result = new TlaExprFormula(cond.exprGroup.exprSeq.TranslateToTlaExpr());
+                result = new TlaExprFormula(cond.exprSeq.TranslateToTlaExpr());
 
             return result;
         }

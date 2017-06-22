@@ -51,7 +51,7 @@ namespace Verifier.Tla
 
             public Var(string name)
             {
-                this.Name = name.LowerFirstCharacter();
+                this.Name = name; //.LowerFirstCharacter();
             }
 
             protected override TRet ApplyImpl<TRet>(ITlaExprVisitor<TRet> visitor) { return visitor.VisitVar(this); }

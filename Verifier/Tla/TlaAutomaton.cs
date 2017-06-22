@@ -70,8 +70,11 @@ namespace Verifier.Tla
             readonly List<TlaTransition> _outTransitions = new List<TlaTransition>();
             readonly List<TlaTransition> _inTransitions = new List<TlaTransition>();
 
-            public ReadOnlyCollection<ITlaTransition> Outgoings { get { return new ReadOnlyCollection<ITlaTransition>(_outTransitions.ToArray()); } }
-            public ReadOnlyCollection<ITlaTransition> Incomings { get { return new ReadOnlyCollection<ITlaTransition>(_inTransitions.ToArray()); } }
+            public ReadOnlyCollection<TlaTransition> Outgoings { get { return new ReadOnlyCollection<TlaTransition>(_outTransitions.ToArray()); } }
+            public ReadOnlyCollection<TlaTransition> Incomings { get { return new ReadOnlyCollection<TlaTransition>(_inTransitions.ToArray()); } }
+
+            ReadOnlyCollection<ITlaTransition> ITlaState.Outgoings { get { return new ReadOnlyCollection<ITlaTransition>(_outTransitions.ToArray()); } }
+            ReadOnlyCollection<ITlaTransition> ITlaState.Incomings { get { return new ReadOnlyCollection<ITlaTransition>(_inTransitions.ToArray()); } }
 
             public object Tag { get; set; }
 
@@ -80,17 +83,18 @@ namespace Verifier.Tla
                 _owner = owner;
 
                 this.Id = id;
-                this.Name = name.LowerFirstCharacter();
+                this.Name = name; //.LowerFirstCharacter();
                 this.IsInitial = isInitial;
                 this.IsAccepting = isAccepting;
             }
 
             public void RegisterOutgoing(TlaTransition transition) { _outTransitions.Add(transition); }
             public void RegisterIncoming(TlaTransition transition) { _inTransitions.Add(transition); }
+            public void UnregisterIncoming(TlaTransition t) { _inTransitions.Remove(t); }
 
             public override string ToString()
             {
-                return $"S#{this.Id}";
+                return $"S#{this.Id}:{this.Name}";
             }
         }
 
@@ -120,7 +124,7 @@ namespace Verifier.Tla
             }
         }
 
-        readonly Dictionary<string, TlaState> _statesByName = new Dictionary<string, TlaState>(StringComparer.InvariantCultureIgnoreCase);
+        readonly Dictionary<string, TlaState> _statesByName = new Dictionary<string, TlaState>(); // StringComparer.InvariantCultureIgnoreCase);
         readonly Dictionary<int, TlaState> _statesById = new Dictionary<int, TlaState>();
 
         readonly List<TlaTransition> _allTransitions = new List<TlaTransition>();
@@ -180,6 +184,39 @@ namespace Verifier.Tla
         public override string ToString()
         {
             return $"{{{string.Join(", ", _initialStates)}}} --> ... --> {{{string.Join(", ", _acceptingStates)}}}";
+        }
+
+        /// <summary>
+        /// remove all states without incoming transitions except initial
+        /// </summary>
+        public void Optimize()
+        {
+            while (this.TryOptimize()) ;
+        }
+
+        private bool TryOptimize()
+        {
+            var states = _statesById.Values.ToArray();
+
+            foreach (var state in states)
+            {
+                if (!state.IsInitial && state.Incomings.Count == 0)
+                    this.RemoveState(state);
+            }
+
+            return states.Length != _statesById.Count;
+        }
+
+        private void RemoveState(TlaState state)
+        {
+            _statesById.Remove(state.Id);
+            _statesByName.Remove(state.Name);
+
+            foreach (var t in state.Outgoings)
+            {
+                _statesById[t.ToState.Id].UnregisterIncoming(t);
+                _allTransitions.Remove(t);
+            }
         }
     }
 }

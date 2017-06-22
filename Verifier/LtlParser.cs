@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
 using Verifier.Model;
 using Verifier.Tla;
 using Verifier.LtlAutomatonParser;
@@ -13,11 +15,34 @@ using Verifier.LtlAutomatonParser;
 
 namespace Verifier
 {
-    public class LtlParser
+    public class LtlParser : IDisposable
     {
-        private LtlParser() {}
+        readonly DirectoryInfo _tempDir;
+        readonly string _ltl2baExecutablePath;
 
-        public static TlaAutomaton Parse(string ltl)
+        public LtlParser()
+        {
+            var userTempFolderPath = Path.GetTempPath();
+            string tempFolderPath;
+
+            do { tempFolderPath = Path.Combine(userTempFolderPath, Guid.NewGuid().ToString()); }
+            while (Directory.Exists(tempFolderPath));
+
+            _tempDir = Directory.CreateDirectory(tempFolderPath);
+
+            if (RunningPlatform() == Platform.Windows)
+            {
+                _ltl2baExecutablePath = Path.Combine(_tempDir.FullName, "ltl2ba.exe");
+                File.WriteAllBytes(_ltl2baExecutablePath, LtlParserResources.ltl2ba_win32);
+            }
+            else
+            {
+                _ltl2baExecutablePath = Path.Combine(_tempDir.FullName, "ltl2ba");
+                File.WriteAllBytes(_ltl2baExecutablePath, LtlParserResources.ltl2ba_lin32);
+            }
+        }
+
+        public TlaAutomaton Parse(string ltl)
         {
             var parser = new LtlParser();
 
@@ -29,7 +54,7 @@ namespace Verifier
 
         private string GetStringAutomaton(string ltl)
         {
-            var processStartInfo = new ProcessStartInfo("ltl2ba.exe") {
+            var processStartInfo = new ProcessStartInfo(_ltl2baExecutablePath) {
                 UseShellExecute = false,
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
@@ -51,7 +76,7 @@ namespace Verifier
         private TlaAutomaton ParseStringAutomaton(string strAutomaton)
         {
             var automatonParser = new LtlAutomatonTextParser();
-            var automaton = automatonParser.TryParseTlaAutomaton(strAutomaton, true);
+            var automaton = automatonParser.ParseTlaAutomaton(strAutomaton, true);
 
             return automaton;
         }
@@ -60,6 +85,46 @@ namespace Verifier
         {
             return $"!({ltl})";
         }
-        
+
+        public void Dispose()
+        {
+            try { _tempDir.Delete(true); }
+            catch
+            {
+                Thread.Sleep(500);
+                try { _tempDir.Delete(true); }
+                catch { }
+            }
+        }
+
+        public enum Platform
+        {
+            Windows,
+            Linux,
+            Mac
+        }
+
+        public static Platform RunningPlatform()
+        {
+            switch (Environment.OSVersion.Platform)
+            {
+                case PlatformID.Unix:
+                    // Well, there are chances MacOSX is reported as Unix instead of MacOSX.
+                    // Instead of platform check, we'll do a feature checks (Mac specific root folders)
+                    if (Directory.Exists("/Applications")
+                        & Directory.Exists("/System")
+                        & Directory.Exists("/Users")
+                        & Directory.Exists("/Volumes"))
+                        return Platform.Mac;
+                    else
+                        return Platform.Linux;
+
+                case PlatformID.MacOSX:
+                    return Platform.Mac;
+
+                default:
+                    return Platform.Windows;
+            }
+        }
     }
 }

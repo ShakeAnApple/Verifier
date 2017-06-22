@@ -1,0 +1,158 @@
+﻿<?xml version="1.0"?>
+<Grammar xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" StartRule="grammar" SkipRule="skip" xmlns="SimplePegGrammar">
+  <Rule Name="identifier">
+    <Regex Pattern="[a-zA-Z_][a-zA-Z0-9_]*" />
+  </Rule>
+  <Rule Name="regex">
+    <Regex Pattern="\&quot;[^\&quot;\\]*(?:\\.[^\&quot;\\]*)*\&quot;" />
+  </Rule>
+  <Rule Name="chars">
+    <Regex Pattern="'[^']*'" />
+  </Rule>
+  <Rule Name="check">
+    <Seq>
+      <Chars String="&amp;" />
+      <Call RuleName="trivial" />
+    </Seq>
+  </Rule>
+  <Rule Name="not">
+    <Seq>
+      <Chars String="^" />
+      <Call RuleName="trivial" />
+    </Seq>
+  </Rule>
+  <Rule Name="group">
+    <Seq>
+      <Chars String="(" />
+      <Call RuleName="exprsSeq" />
+      <Chars String=")" />
+    </Seq>
+  </Rule>
+  <Rule Name="num">
+    <Regex Pattern="[0-9]+" />
+  </Rule>
+  <Rule Name="quantorSpec">
+    <Alts>
+      <Seq>
+        <Call RuleName="num" />
+      </Seq>
+      <Seq>
+        <Call RuleName="num" />
+        <Chars String="," />
+      </Seq>
+      <Seq>
+        <Chars String="," />
+        <Call RuleName="num" />
+      </Seq>
+      <Seq>
+        <Call RuleName="num" />
+        <Chars String="," />
+        <Call RuleName="num" />
+      </Seq>
+    </Alts>
+  </Rule>
+  <Rule Name="quantor">
+    <Alts>
+      <Chars String="*" />
+      <Chars String="+" />
+      <Chars String="?" />
+      <Seq>
+        <Chars String="{" />
+        <Call RuleName="quantorSpec" />
+        <Chars String="}" />
+      </Seq>
+    </Alts>
+  </Rule>
+  <Rule Name="number">
+    <Seq>
+      <Call RuleName="trivial" />
+      <Call RuleName="quantor" />
+    </Seq>
+  </Rule>
+  <Rule Name="alternatives">
+    <Seq>
+      <Call RuleName="altItem" />
+      <Number Min="1">
+        <Seq>
+          <Chars String="|" />
+          <Call RuleName="altItem" />
+        </Seq>
+      </Number>
+    </Seq>
+  </Rule>
+  <Rule Name="altItem">
+    <Alts>
+      <Call RuleName="number" />
+      <Call RuleName="trivial" />
+    </Alts>
+  </Rule>
+  <Rule Name="trivial">
+    <Alts>
+      <Call RuleName="identifier" />
+      <Call RuleName="regex" />
+      <Call RuleName="chars" />
+      <Call RuleName="check" />
+      <Call RuleName="not" />
+      <Call RuleName="group" />
+    </Alts>
+  </Rule>
+  <Rule Name="exprItem">
+    <Alts>
+      <Call RuleName="alternatives" />
+      <Call RuleName="number" />
+      <Call RuleName="trivial" />
+    </Alts>
+  </Rule>
+  <Rule Name="exprsSeq">
+    <Number Min="1">
+      <Call RuleName="exprItem" />
+    </Number>
+  </Rule>
+  <Rule Name="nsName">
+    <Seq>
+      <Call RuleName="identifier"/>
+      <Number>
+        <Seq>
+          <Chars String="." />
+          <Call RuleName="identifier"/>
+        </Seq>
+      </Number>
+    </Seq>
+  </Rule>
+  <Rule Name="header">
+    <Seq>
+      <Chars String="grammar" />
+      <Number Min="0" Max="1">
+        <Call RuleName="nsName" />
+      </Number>
+      <Chars String="start" />
+      <Call RuleName="identifier" />
+      <Number Min="0" Max="1">
+        <Seq>
+          <Chars String="skip" />
+          <Call RuleName="identifier" />
+        </Seq>
+      </Number>
+      <Chars String=";" />
+    </Seq>
+  </Rule>
+  <Rule Name="rule">
+    <Seq>
+      <Call RuleName="identifier" />
+      <Chars String=":" />
+      <Call RuleName="exprsSeq" />
+      <Chars String=";" />
+    </Seq>
+  </Rule>
+  <Rule Name="grammar">
+    <Seq>
+      <Call RuleName="header"/>
+      <Number>
+        <Call RuleName="rule" />
+      </Number>
+    </Seq>
+  </Rule>
+  <Rule Name="skip">
+    <Regex Pattern="([\s]*)(/\*(?>(?:(?>[^*]+)|\*(?!/))*)\*/[\s]*)*" />
+  </Rule>
+</Grammar>

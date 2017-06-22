@@ -39,7 +39,7 @@ namespace Verifier.LtlAutomatonParser
                 st.Outgoing = state.transitions != null ? state.transitions.Select(t => new Transition(transitionIdCount++) {
                     ToId = a.States.First(s => s.Name == t.stateName.identifier.@string).Id,
                     FromId = st.Id,
-                    Condition = t.condition.exprGroup.exprSeq.TranslateToConditionExpr()
+                    Condition = t.condition.exprSeq.TranslateToConditionExpr()
                 }).ToList() : new List<Transition>();
             }
 

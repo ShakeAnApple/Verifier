@@ -8,7 +8,7 @@ stateName: identifier;
 errTransition: 'false';
 
 transition: '::' condition '->' 'goto' stateName;
-condition: exprGroup;
+condition: exprSeq;
 
 not: '!';
 boolOperator: '&&' | '||';

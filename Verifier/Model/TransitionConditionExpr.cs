@@ -37,7 +37,7 @@ namespace Verifier.Model
 
             public VarExpr(string name)
             {
-                this.Name = name.LowerFirstCharacter();
+                this.Name = name; //.LowerFirstCharacter();
             }
 
             protected override TRet ApplyImpl<TRet>(ITransitionConditionExprVisitor<TRet> visitor)

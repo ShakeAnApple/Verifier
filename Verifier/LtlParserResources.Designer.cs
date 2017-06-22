@@ -61,6 +61,26 @@ namespace Verifier {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] ltl2ba_lin32 {
+            get {
+                object obj = ResourceManager.GetObject("ltl2ba_lin32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] ltl2ba_win32 {
+            get {
+                object obj = ResourceManager.GetObject("ltl2ba_win32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to grammar Verifier.LtlAutomatonParser.TextModel start automaton skip omitPattern;
         ///
         ///automaton: &apos;never&apos; &apos;{&apos; (state)* &apos;}&apos;;
@@ -71,7 +91,7 @@ namespace Verifier {
         ///errTransition: &apos;false&apos;;
         ///
         ///transition: &apos;::&apos; condition &apos;-&gt;&apos; &apos;goto&apos; stateName;
-        ///condition: exprGroup;
+        ///condition: exprSeq;
         ///
         ///not: &apos;!&apos;;
         ///boolOperator: &apos;&amp;&amp;&apos; | &apos;||&apos;;
@@ -80,7 +100,7 @@ namespace Verifier {
         ///exprGroup: &apos;(&apos; exprSeq &apos;)&apos;;
         ///
         ///literal: &apos;1&apos;;
-        ///id [rest of string was truncated]&quot;;.
+        ///iden [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SourceGrammarText {
             get {

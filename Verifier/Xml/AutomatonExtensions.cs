@@ -10,6 +10,11 @@ namespace Verifier.Xml
     {
         public static void SaveAsDgmlGraph(this TlaAutomaton automaton, string fileName)
         {
+            automaton.ToXmlGraph().MakeXmlDocument().Save(fileName);
+        }
+
+        public static XmlGraph ToXmlGraph(this TlaAutomaton automaton)
+        {
             var xg = new XmlGraph();
 
             foreach (var state in automaton.AllStates)
@@ -32,7 +37,7 @@ namespace Verifier.Xml
                 xg[item.FromState.Name].ConnectTo(xg[item.ToState.Name]).Text = item.Condition == null ? "<NULL>" : item.Condition.ToString();
             }
 
-            xg.MakeXmlDocument().Save(fileName);
+            return xg;
         }
     }
 }

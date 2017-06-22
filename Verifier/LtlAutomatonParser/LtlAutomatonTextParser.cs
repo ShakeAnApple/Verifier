@@ -19,18 +19,18 @@ namespace Verifier.LtlAutomatonParser
             _grammar = DefenitionsGrammar.TryParse(LtlParserResources.SourceGrammarText);
         }
 
-        private automaton TryParseText(string text)
+        private automaton ParseText(string text)
         {
             var state = _grammar.TryParse(text);
 
-            if (state.Position < text.Length)
-                return null;
+            if (state == null || state.Position < text.Length)
+                throw new ApplicationException("invalid ltl automaton model syntax:" + Environment.NewLine + text);
 
             var textTree = state.CurrentNodes.First();
 
             var tree = TextModel.SourceAutomatonMapping.MapAutomaton(textTree);
             if (tree == null)
-                return null;
+                throw new ApplicationException("invalid ltl automaton model");
 
             if (tree.states.Any(s => s.errTransition != null))
                 throw new ApplicationException("invalid ltl automaton");
@@ -40,13 +40,13 @@ namespace Verifier.LtlAutomatonParser
 
         public Automaton TryParseModelAutomaton(string text)
         {
-            var tree = this.TryParseText(text);
+            var tree = this.ParseText(text);
             return tree?.TranslateToModel();
         }
 
-        public TlaAutomaton TryParseTlaAutomaton(string text, bool useTransitionConditions)
+        public TlaAutomaton ParseTlaAutomaton(string text, bool useTransitionConditions)
         {
-            var tree = this.TryParseText(text);
+            var tree = this.ParseText(text);
             return tree?.TranslateToTlaAutomaton(useTransitionConditions);
         }
     }
