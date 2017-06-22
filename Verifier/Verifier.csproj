@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7D98EB1D-61B2-4AC7-B30A-2F1CAB5FB91F}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Verifier</RootNamespace>
+    <AssemblyName>Verifier</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="IKVM.OpenJDK.Core">
+      <HintPath>..\..\..\..\Tools\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="jltl2ba">
+      <HintPath>..\..\jltl2ba\src\jltl2ba\jltl2ba.dll</HintPath>
+    </Reference>
+    <Reference Include="JVM">
+      <HintPath>..\..\..\..\Tools\ikvm-7.2.4630.5\bin-x64\JVM.DLL</HintPath>
+    </Reference>
+    <Reference Include="ltl2ba">
+      <HintPath>..\..\ltl2ba4j\ltl2ba.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="LtlAutomatonParser\TlaTranslationExtensions.cs" />
+    <Compile Include="LtlParser.cs" />
+    <Compile Include="LtlAutomatonParser\LtlAutomatonTextParser.cs" />
+    <Compile Include="LtlAutomatonParser\TextModel.cs" />
+    <Compile Include="LtlAutomatonParser\TranslationExtensions.cs" />
+    <Compile Include="LtlParserResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LtlParserResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Model\LtlFormula.cs" />
+    <Compile Include="Model\State.cs" />
+    <Compile Include="Model\Automaton.cs" />
+    <Compile Include="Model\Transition.cs" />
+    <Compile Include="AutomatonVerifier.cs" />
+    <Compile Include="Model\TransitionConditionExpr.cs" />
+    <Compile Include="Tla\ModelExtensions.cs" />
+    <Compile Include="Tla\TlaAutomaton.cs" />
+    <Compile Include="Tla\TlaExpr.cs" />
+    <Compile Include="Tla\TlaExprFormula.cs" />
+    <Compile Include="Tla\TlaTransitionConditionFormula.cs" />
+    <Compile Include="Xml\AutomatonExtensions.cs" />
+    <Compile Include="Xml\chart.cs">
+      <DependentUpon>chart.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Xml\ChartXmlSerializer.cs" />
+    <Compile Include="Xml\XmlDiagramType.CodeBehind.cs" />
+    <Compile Include="Xml\XmlGraph.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="LtlAutomatonParser\RegenDefTextModel.bat" />
+    <None Include="Xml\chart.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Xml\RegenXmlClasses.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AutomataExample.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="ltl2ba.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="LtlAutomatonParser\Grammar.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\PolinaCompiler\PolinaCompiler.Peg\PolinaCompiler.Peg.csproj">
+      <Project>{8d265d6e-1f8b-4913-a1ed-6faeb2eedd63}</Project>
+      <Name>PolinaCompiler.Peg</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="LtlParserResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LtlParserResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

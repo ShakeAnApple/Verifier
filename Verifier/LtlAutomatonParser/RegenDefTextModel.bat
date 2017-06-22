@@ -1,0 +1,1 @@
+..\..\..\..\PolinaCompiler\PolinaCompiler.Peg\bin\Debug\PolinaCompiler.Peg.exe Grammar.txt TextModel.cs

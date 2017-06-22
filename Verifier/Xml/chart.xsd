@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="diagram" type="XmlDiagramType" />
+
+  <xs:complexType name="XmlDiagramType">
+    <xs:sequence>
+      <xs:element name="name" type="string" />
+      <xs:element name="data" type="XmlDataType" />
+      <xs:element name="widget" type="XmlWidgetType" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="XmlWidgetType">
+    <xs:sequence>
+      <xs:element name="attributes" type="XmlWidgetAttributesType" />
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:unsignedByte" use="required" />
+    <xs:attribute name="type" type="WidgetType" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="XmlDataType">
+    <xs:sequence>
+      <xs:element name="Statemachine" type="XmlStateMachineType" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="XmlStateMachineType">
+    <xs:sequence>
+      <xs:element name="event" type="XmlStateMachineEventType" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="variable" type="XmlStateMachineVariableType" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="autoreject" type="bool" minOccurs="0" maxOccurs="1" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="XmlStateMachineEventType">
+    <xs:attribute name="name" type="string" use="required" />
+    <xs:attribute name="comment" type="string" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="XmlStateMachineVariableType">
+    <xs:attribute name="decl" type="string" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="XmlWidgetAttributesType">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="event" type="XmlStateMachineEventType" />
+      <xs:element minOccurs="0" name="action" type="XmlWidgetActionType" maxOccurs="unbounded" />
+      <xs:element minOccurs="0" name="code" type="string" />
+      <xs:element minOccurs="0" name="guard" type="string" />
+      <xs:element minOccurs="0" name="name" type="string" />
+      <xs:element minOccurs="0" name="type" type="xs:unsignedByte" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="incoming" type="XmlIdAttrType" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="outgoing" type="XmlIdAttrType" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="nested" type="XmlWidgetNestedType" />
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="XmlWidgetNestedType">
+    <xs:attribute name="type" type="string" use="required" />
+    <xs:attribute name="name" type="string" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="XmlIdAttrType">
+    <xs:attribute name="id" type="int" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="XmlWidgetActionType">
+    <xs:attribute name="name" type="string" use="required" />
+    <xs:attribute name="comment" type="string" use="optional"/>
+    <xs:attribute name="synchro" type="xs:unsignedByte" use="required" />
+  </xs:complexType>
+
+  <xs:simpleType name="bool">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="False" />
+      <xs:enumeration value="True" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="string">
+    <xs:restriction base="xs:string" />
+  </xs:simpleType>
+
+  <xs:simpleType name="int">
+    <xs:restriction base="xs:int" />
+  </xs:simpleType>
+
+  <xs:simpleType name="WidgetType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="State"/>
+      <xs:enumeration value="Transition"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

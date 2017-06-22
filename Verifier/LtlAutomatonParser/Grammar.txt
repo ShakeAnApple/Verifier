@@ -1,0 +1,25 @@
+﻿grammar Verifier.LtlAutomatonParser.TextModel start automaton skip omitPattern;
+
+automaton: 'never' '{' (state)* '}';
+
+state: stateName ':' ('if' (transition)* 'fi' ';') | ('skip') | errTransition;
+
+stateName: identifier;
+errTransition: 'false';
+
+transition: '::' condition '->' 'goto' stateName;
+condition: exprGroup;
+
+not: '!';
+boolOperator: '&&' | '||';
+exprSeq: exprItem (boolOperator exprItem)*;
+exprItem: not? (literal|identifier|exprGroup);
+exprGroup: '(' exprSeq ')';
+
+literal: '1';
+identifier: ^(keyword sep) "[a-zA-Z_][a-zA-Z_0-9]*";
+
+keyword: 'if'|'fi'|'skip'|'goto';
+sep: "[^\w]";
+
+omitPattern: "([\s]*)(/\*(?>(?:(?>[^*]+)|\*(?!/))*)\*/[\s]*)*";
