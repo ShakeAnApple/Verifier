@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Verifier.Model;
+using Verifier.Tla;
 
 namespace Verifier.Xml
 {
@@ -18,13 +19,13 @@ namespace Verifier.Xml
             _xs = new XmlSerializer(typeof(XmlDiagramType));
         }
 
-        public Automaton LoadFromXml(string xmlFilePath)
+        public TlaAutomaton LoadFromXml(string xmlFilePath)
         {
             var xml = File.ReadAllText(xmlFilePath);
             using (var stream = new StringReader(xml))
             {
                 var sm = (XmlDiagramType)_xs.Deserialize(stream);
-                return sm.ToAutomata();
+                return sm.ToAutomata().ToTlaAutomaton(true);
             }
         }
     }

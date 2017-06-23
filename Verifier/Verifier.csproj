@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LtlAutomatonParser\AutomatonParsingContext.cs" />
     <Compile Include="LtlAutomatonParser\TlaTranslationExtensions.cs" />
     <Compile Include="LtlParser.cs" />
     <Compile Include="LtlAutomatonParser\LtlAutomatonTextParser.cs" />
@@ -74,7 +75,6 @@
     <Compile Include="Xml\XmlGraph.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="ltl2ba" />
     <None Include="LtlAutomatonParser\RegenDefTextModel.bat" />
     <None Include="Xml\chart.xsd">

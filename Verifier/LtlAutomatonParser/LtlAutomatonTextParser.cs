@@ -38,16 +38,16 @@ namespace Verifier.LtlAutomatonParser
             return tree;
         }
 
-        public Automaton TryParseModelAutomaton(string text)
+        public Automaton TryParseModelAutomaton(string text, AutomatonParsingContext ctx)
         {
             var tree = this.ParseText(text);
-            return tree?.TranslateToModel();
+            return tree == null ? null : tree.TranslateToModel(ctx);
         }
 
-        public TlaAutomaton ParseTlaAutomaton(string text, bool useTransitionConditions)
+        public TlaAutomaton ParseTlaAutomaton(string text, bool useTransitionConditions, AutomatonParsingContext ctx)
         {
             var tree = this.ParseText(text);
-            return tree?.TranslateToTlaAutomaton(useTransitionConditions);
+            return tree == null ? null : tree.TranslateToTlaAutomaton(useTransitionConditions, ctx);
         }
     }
 }

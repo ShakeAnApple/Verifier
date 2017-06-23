@@ -172,9 +172,19 @@ namespace PolinaCompiler.Peg
                     if (help != null)
                     {
                         if (arg.Alias != null)
-                            sb.Append("\t").Append(arg.Alias).Append("\n");
+                        {
+                            sb.Append("\t").Append(arg.Alias);
+                            if (arg.Property.PropertyType != typeof(bool))
+                                sb.Append(" <arg>");
+
+                            sb.Append("\n");
+                        }
 
                         sb.Append("\t").Append(arg.Key);
+
+                        if (arg.Property.PropertyType != typeof(bool))
+                            sb.Append(" <arg>");
+
                         FormatHelpDescr(sb, help);
                     }
                 }

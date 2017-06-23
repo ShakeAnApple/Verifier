@@ -94,7 +94,7 @@ namespace Verifier.Tla
 
             public override string ToString()
             {
-                return $"S#{this.Id}:{this.Name}";
+                return string.Format("S#{0}:{1}", this.Id, this.Name);
             }
         }
 
@@ -120,7 +120,7 @@ namespace Verifier.Tla
 
             public override string ToString()
             {
-                return $"T#{this.Id}: {this.FromState} --> {this.ToState} when {this.Condition}";
+                return string.Format("T#{0}: {1} --> {2} when {3}", this.Id, this.FromState, this.ToState, this.Condition);
             }
         }
 
@@ -183,7 +183,7 @@ namespace Verifier.Tla
 
         public override string ToString()
         {
-            return $"{{{string.Join(", ", _initialStates)}}} --> ... --> {{{string.Join(", ", _acceptingStates)}}}";
+            return string.Format("{{{0}}} --> ... --> {{{1}}}", string.Join(", ", _initialStates), string.Join(", ", _acceptingStates));
         }
 
         /// <summary>

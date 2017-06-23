@@ -87,7 +87,7 @@ namespace Verifier.Model
 
             public override string ToString()
             {
-                return $"!{this.Child}";
+                return string.Format("!{0}", this.Child);
             }
         }
 
@@ -116,7 +116,7 @@ namespace Verifier.Model
                     { TransitionConditionBinaryExprKind.BoolOr, "||" },
                 };
 
-                return $"({this.Left} {ops[this.Kind]} {this.Right})";
+                return string.Format("({0} {1} {2})", this.Left, ops[this.Kind], this.Right);
             }
         }
 

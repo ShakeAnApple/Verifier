@@ -95,7 +95,7 @@ namespace Verifier.Tla
 
             protected override TRet ApplyImpl<TRet>(ITlaExprVisitor<TRet> visitor) { return visitor.VisitOr(this); }
 
-            public override string ToString() { return $"( ({Left}) || ({Right}) )"; }
+            public override string ToString() { return string.Format("( ({0}) || ({1}) )", Left, Right); }
         }
 
         public class Impl : BinaryExpression
@@ -104,7 +104,7 @@ namespace Verifier.Tla
 
             protected override TRet ApplyImpl<TRet>(ITlaExprVisitor<TRet> visitor) { return visitor.VisitImpl(this); }
 
-            public override string ToString() { return $"( ({Left}) -> ({Right}) )"; }
+            public override string ToString() { return string.Format("( ({0}) -> ({1}) )", Left, Right); }
         }
 
         public class And : BinaryExpression
@@ -113,7 +113,7 @@ namespace Verifier.Tla
 
             protected override TRet ApplyImpl<TRet>(ITlaExprVisitor<TRet> visitor) { return visitor.VisitAnd(this); }
 
-            public override string ToString() { return $"(({Left}) && ({Right}))"; }
+            public override string ToString() { return string.Format("( ({0}) && ({1}) )", Left, Right); }
         }
 
         public class Not : UnaryExpression
@@ -122,7 +122,7 @@ namespace Verifier.Tla
 
             protected override TRet ApplyImpl<TRet>(ITlaExprVisitor<TRet> visitor) { return visitor.VisitNot(this); }
 
-            public override string ToString() { return $"!({Child})"; }
+            public override string ToString() { return string.Format("!({0})", Child); }
         }
 
         public class Future : UnaryExpression
@@ -131,7 +131,7 @@ namespace Verifier.Tla
 
             protected override TRet ApplyImpl<TRet>(ITlaExprVisitor<TRet> visitor) { return visitor.VisitFuture(this); }
 
-            public override string ToString() { return $"F({Child})"; }
+            public override string ToString() { return string.Format( "F({0})", Child); }
         }
 
         public class Next : UnaryExpression
@@ -140,7 +140,7 @@ namespace Verifier.Tla
 
             protected override TRet ApplyImpl<TRet>(ITlaExprVisitor<TRet> visitor) { return visitor.VisitNext(this); }
 
-            public override string ToString() { return $"X({Child})"; }
+            public override string ToString() { return string.Format("X({0})", Child); }
         }
 
         public class Globally : UnaryExpression
@@ -149,7 +149,7 @@ namespace Verifier.Tla
 
             protected override TRet ApplyImpl<TRet>(ITlaExprVisitor<TRet> visitor) { return visitor.VisitGlobally(this); }
 
-            public override string ToString() { return $"({Child})"; }
+            public override string ToString() { return string.Format("({0})",Child); }
         }
 
         public class Release : BinaryExpression
@@ -158,7 +158,7 @@ namespace Verifier.Tla
 
             protected override TRet ApplyImpl<TRet>(ITlaExprVisitor<TRet> visitor) { return visitor.VisitRelease(this); }
 
-            public override string ToString() { return $"( ({Left}) R ({Right}) )"; }
+            public override string ToString() { return string.Format("( ({0}) R ({1}) )", Left, Right); }
         }
 
         public class Until : BinaryExpression
@@ -167,7 +167,7 @@ namespace Verifier.Tla
 
             protected override TRet ApplyImpl<TRet>(ITlaExprVisitor<TRet> visitor) { return visitor.VisitUntil(this); }
 
-            public override string ToString() { return $"( ({Left}) U ({Right}) )"; }
+            public override string ToString() { return string.Format("( ({0}) U ({1}) )", Left, Right); }
         }
 
         #endregion

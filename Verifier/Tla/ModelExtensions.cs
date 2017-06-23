@@ -40,7 +40,7 @@ namespace Verifier.Tla
                         if (string.IsNullOrWhiteSpace(transition.EventName))
                             throw new NotImplementedException("");
 
-                        var statesSeq = transition.Actions.Select(actionName => result.CreateState($"{state.Name}|{transition.EventName}_before_{actionName}", false, false))
+                        var statesSeq = transition.Actions.Select(actionName => result.CreateState(string.Format("{0}|{1}_before_{2}", state.Name, transition.EventName, actionName), false, false))
                                                   .Concat(new[] { result.GetState(automaton.States.First(s => s.Id == transition.ToId).Name) })
                                                   .ToArray();
 

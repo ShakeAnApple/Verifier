@@ -20,7 +20,7 @@ namespace Verifier.LtlAutomatonParser
             { TransitionConditionBinaryExprKind.BoolAnd, 2 },
         };
 
-        public static Automaton TranslateToModel(this automaton root)
+        public static Automaton TranslateToModel(this automaton root, AutomatonParsingContext ctx)
         {
             var transitionIdCount = 0;
 
@@ -39,7 +39,7 @@ namespace Verifier.LtlAutomatonParser
                 st.Outgoing = state.transitions != null ? state.transitions.Select(t => new Transition(transitionIdCount++) {
                     ToId = a.States.First(s => s.Name == t.stateName.identifier.@string).Id,
                     FromId = st.Id,
-                    Condition = t.condition.exprSeq.TranslateToConditionExpr()
+                    Condition = t.condition.exprSeq.TranslateToConditionExpr(ctx)
                 }).ToList() : new List<Transition>();
             }
 
@@ -72,17 +72,17 @@ namespace Verifier.LtlAutomatonParser
             }
         }
 
-        public static TransitionConditionExpr TranslateToConditionExpr(this exprSeq expr)
+        public static TransitionConditionExpr TranslateToConditionExpr(this exprSeq expr, AutomatonParsingContext ctx)
         {
             if (expr.exprItems.Length != expr.boolOperators.Length + 1)
                 throw new ApplicationException();
 
             var items = new ExprItem[expr.exprItems.Length + expr.boolOperators.Length];
-            items[0] = new ExprItem(expr.exprItems[0].Translate());
+            items[0] = new ExprItem(expr.exprItems[0].Translate(ctx));
             for (int i = 0, j = 1; i < expr.boolOperators.Length; i++, j += 2)
             {
                 items[j + 0] = new ExprItem(_opsByStr[expr.boolOperators[i].strings.First()]);
-                items[j + 1] = new ExprItem(expr.exprItems[i + 1].Translate());
+                items[j + 1] = new ExprItem(expr.exprItems[i + 1].Translate(ctx));
             }
 
             return TranslateExprPart(items, 0, items.Length);
@@ -119,14 +119,14 @@ namespace Verifier.LtlAutomatonParser
             );
         }
 
-        private static TransitionConditionExpr Translate(this exprItem item)
+        private static TransitionConditionExpr Translate(this exprItem item, AutomatonParsingContext ctx)
         {
             TransitionConditionExpr expr;
 
             if (item.identifier != null)
-                expr = new TransitionConditionExpr.VarExpr(item.identifier.@string);
+                expr = new TransitionConditionExpr.VarExpr(ctx.Unescape(item.identifier.@string));
             else if (item.exprGroup != null)
-                expr = item.exprGroup.exprSeq.TranslateToConditionExpr();
+                expr = item.exprGroup.exprSeq.TranslateToConditionExpr(ctx);
             else if (item.literal != null)
                 expr = new TransitionConditionExpr.ConstExpr(true);
             else

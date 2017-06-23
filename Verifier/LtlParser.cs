@@ -25,7 +25,7 @@ namespace Verifier
             var userTempFolderPath = Path.GetTempPath();
             string tempFolderPath;
 
-            do { tempFolderPath = Path.Combine(userTempFolderPath, Guid.NewGuid().ToString()); }
+            do { tempFolderPath = Path.Combine(userTempFolderPath, "polina-verifier-" + Guid.NewGuid().ToString()); }
             while (Directory.Exists(tempFolderPath));
 
             _tempDir = Directory.CreateDirectory(tempFolderPath);
@@ -39,15 +39,15 @@ namespace Verifier
             {
                 _ltl2baExecutablePath = Path.Combine(_tempDir.FullName, "ltl2ba");
                 File.WriteAllBytes(_ltl2baExecutablePath, LtlParserResources.ltl2ba_lin32);
+                Process.Start("chmod", "+x " + _ltl2baExecutablePath).WaitForExit();
             }
         }
 
         public TlaAutomaton Parse(string ltl)
         {
-            var parser = new LtlParser();
-
-            var strAutomaton = parser.GetStringAutomaton(parser.NegateLtl(ltl));
-            var automaton = parser.ParseStringAutomaton(strAutomaton);
+            var ctx = new AutomatonParsingContext(ltl);
+            var strAutomaton = this.GetStringAutomaton(this.NegateLtl(ctx.EscapedLtl));
+            var automaton = this.ParseStringAutomaton(strAutomaton, ctx);
 
             return automaton;
         }
@@ -62,7 +62,6 @@ namespace Verifier
             };
 
             var process = Process.Start(processStartInfo);
-            process.WaitForExit();
 
             var automatonStr = "";
             using (var output = process.StandardOutput)
@@ -70,20 +69,22 @@ namespace Verifier
                 automatonStr = output.ReadToEnd();
             }
 
+            process.WaitForExit();
+
             return automatonStr;
         }
 
-        private TlaAutomaton ParseStringAutomaton(string strAutomaton)
+        private TlaAutomaton ParseStringAutomaton(string strAutomaton, AutomatonParsingContext ctx)
         {
             var automatonParser = new LtlAutomatonTextParser();
-            var automaton = automatonParser.ParseTlaAutomaton(strAutomaton, true);
+            var automaton = automatonParser.ParseTlaAutomaton(strAutomaton, true, ctx);
 
             return automaton;
         }
 
         private string NegateLtl(string ltl)
         {
-            return $"!({ltl})";
+            return string.Format("!({0})", ltl);
         }
 
         public void Dispose()

@@ -36,6 +36,8 @@ namespace Verifier
 
         private readonly TlaAutomaton _modelAutomaton;
 
+        public XmlGraph LastVerificationGraphInfo { get; private set; }
+
         public AutomatonVerifier(TlaAutomaton sm)
         {
             if (sm.AllTransitions.Any(t => !t.Condition.IsConjunction()))
@@ -49,6 +51,7 @@ namespace Verifier
             var automaton = this.Intersect(_modelAutomaton, ltl);
             automaton.Optimize();
             var xg = automaton.ToXmlGraph();
+            this.LastVerificationGraphInfo = xg;
 
             PathItem cycle = null;
             var path = automaton.InitialStates.Select(initState => this.RunAutomatonFrom(initState, step => {
@@ -79,12 +82,10 @@ namespace Verifier
                         xg[item.FromTransition.FromState.Name].GetConnectionTargets().First(l => l.Target.Id == item.FromTransition.ToState.Name).Color = "Green";
                 }
 
-                xg.MakeXmlDocument().Save(@"v:\v.dgml");
                 return list;
             }
             else
             {
-                xg.MakeXmlDocument().Save(@"v:\v.dgml");
                 return null;
             }
         }
@@ -121,7 +122,7 @@ namespace Verifier
         private TlaAutomaton Intersect(TlaAutomaton sm, TlaAutomaton ltl)
         {
             var states = Enumerable.Range(0, 3).SelectMany(n => sm.AllStates.SelectMany(modelState => ltl.AllStates.Select(ltlState => new {
-                name = $"{modelState.Id}x{ltlState.Id}x{n}",
+                name = string.Format("{0}x{1}x{2}", modelState.Id, ltlState.Id, n),
                 tag = modelState.Name
             }))).ToArray();
 
@@ -129,8 +130,8 @@ namespace Verifier
                 x => sm.AllTransitions.SelectMany(mt => ltl.AllTransitions.Select(ft => new { modelTransition = mt, ltlTransition = ft }))
                        .Where(tt => TransitionConditionsIntersects(tt.modelTransition.FromState, tt.modelTransition.Condition, tt.ltlTransition.Condition))
                        .Select(tt => new {
-                           from = $"{tt.modelTransition.FromState.Id}x{tt.ltlTransition.FromState.Id}x{x}",
-                           to = $"{tt.modelTransition.ToState.Id}x{tt.ltlTransition.ToState.Id}x{ComputeTransitionY(tt.modelTransition.ToState, tt.ltlTransition.ToState, x)}",
+                           from = string.Format("{0}x{1}x{2}", tt.modelTransition.FromState.Id, tt.ltlTransition.FromState.Id, x),
+                           to = string.Format("{0}x{1}x{2}", tt.modelTransition.ToState.Id, tt.ltlTransition.ToState.Id, ComputeTransitionY(tt.modelTransition.ToState, tt.ltlTransition.ToState, x)),
                            modelSymbol = tt.modelTransition.Condition,
                            ltlSymbol = tt.ltlTransition.Condition,
                            condition = new TlaTransitionConditionFormula(new TransitionConditionExpr.BinaryExpr(
@@ -141,8 +142,8 @@ namespace Verifier
                        })
             ).ToArray();
 
-            var initialStates = new SortedSet<string>(sm.InitialStates.SelectMany(modelState => ltl.InitialStates.Select(ltlState => $"{modelState.Id}x{ltlState.Id}x0")));
-            var acceptingStates = new SortedSet<string>(sm.AllStates.SelectMany(modelState => ltl.AllStates.Select(ltlState => $"{modelState.Id}x{ltlState.Id}x2")));
+            var initialStates = new SortedSet<string>(sm.InitialStates.SelectMany(modelState => ltl.InitialStates.Select(ltlState => string.Format("{0}x{1}x0", modelState.Id, ltlState.Id))));
+            var acceptingStates = new SortedSet<string>(sm.AllStates.SelectMany(modelState => ltl.AllStates.Select(ltlState => string.Format("{0}x{1}x2", modelState.Id, ltlState.Id))));
 
             var result = new TlaAutomaton();
 

@@ -39,7 +39,7 @@ namespace Verifier.LtlAutomatonParser
             { BinaryOps.Until,   (a,b) => new TlaExpr.Until(a, b) },
         };
 
-        public static TlaAutomaton TranslateToTlaAutomaton(this automaton root, bool useTransitionConditions)
+        public static TlaAutomaton TranslateToTlaAutomaton(this automaton root, bool useTransitionConditions, AutomatonParsingContext ctx)
         {
             var automaton = new TlaAutomaton();
 
@@ -53,7 +53,7 @@ namespace Verifier.LtlAutomatonParser
             {
                 foreach (var target in state.transitions)
                 {
-                    var condition = target.condition.Translate(useTransitionConditions);
+                    var condition = target.condition.Translate(useTransitionConditions, ctx);
                     automaton.CreateTransition(state.stateName.identifier.@string, target.stateName.identifier.@string, condition);
                 }
             }
@@ -61,13 +61,13 @@ namespace Verifier.LtlAutomatonParser
             return automaton;
         }
 
-        static TlaFormula Translate(this condition cond, bool useTransitionConditions)
+        static TlaFormula Translate(this condition cond, bool useTransitionConditions, AutomatonParsingContext ctx)
         {
             TlaFormula result;
             if (useTransitionConditions)
-                result = new TlaTransitionConditionFormula(cond.exprSeq.TranslateToConditionExpr());
+                result = new TlaTransitionConditionFormula(cond.exprSeq.TranslateToConditionExpr(ctx));
             else
-                result = new TlaExprFormula(cond.exprSeq.TranslateToTlaExpr());
+                result = new TlaExprFormula(cond.exprSeq.TranslateToTlaExpr(ctx));
 
             return result;
         }
@@ -93,17 +93,17 @@ namespace Verifier.LtlAutomatonParser
             }
         }
 
-        private static TlaExpr TranslateToTlaExpr(this exprSeq expr)
+        private static TlaExpr TranslateToTlaExpr(this exprSeq expr, AutomatonParsingContext ctx)
         {
             if (expr.exprItems.Length != expr.boolOperators.Length + 1)
                 throw new ApplicationException();
 
             var items = new ExprItem[expr.exprItems.Length + expr.boolOperators.Length];
-            items[0] = new ExprItem(expr.exprItems[0].Translate());
+            items[0] = new ExprItem(expr.exprItems[0].Translate(ctx));
             for (int i = 0, j = 1; i < expr.boolOperators.Length; i++, j += 2)
             {
                 items[j + 0] = new ExprItem(_opsByStr[expr.boolOperators[i].strings.First()]);
-                items[j + 1] = new ExprItem(expr.exprItems[i + 1].Translate());
+                items[j + 1] = new ExprItem(expr.exprItems[i + 1].Translate(ctx));
             }
 
             return TranslateExprPart(items, 0, items.Length);
@@ -141,7 +141,7 @@ namespace Verifier.LtlAutomatonParser
             return binExprCtor(left, right);
         }
 
-        private static TlaExpr Translate(this exprItem item)
+        private static TlaExpr Translate(this exprItem item, AutomatonParsingContext ctx)
         {
             TlaExpr expr;
 
@@ -152,11 +152,11 @@ namespace Verifier.LtlAutomatonParser
                 if (bool.TryParse(item.identifier.@string, out constValue))
                     expr = new TlaExpr.Const(constValue);
                 else
-                    expr = new TlaExpr.Var(item.identifier.@string);
+                    expr = new TlaExpr.Var(ctx.Unescape(item.identifier.@string));
             }
             else if (item.exprGroup != null)
             {
-                expr = item.exprGroup.exprSeq.TranslateToTlaExpr();
+                expr = item.exprGroup.exprSeq.TranslateToTlaExpr(ctx);
             }
             else
             {

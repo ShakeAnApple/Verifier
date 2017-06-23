@@ -6,7 +6,7 @@ using System.Xml;
 
 namespace Verifier.Xml
 {
-    class XmlGraph
+    public class XmlGraph
     {
         Dictionary<string, XmlGraphNode> _nodes = new Dictionary<string, XmlGraphNode>();
 
@@ -82,7 +82,7 @@ namespace Verifier.Xml
 
     }
 
-    class XmlGraphNode : IComparable<XmlGraphNode>
+    public class XmlGraphNode : IComparable<XmlGraphNode>
     {
         XmlGraph _owner;
 
@@ -137,7 +137,7 @@ namespace Verifier.Xml
         }
     }
 
-    class XmlGraphLink : IComparable<XmlGraphLink>
+    public class XmlGraphLink : IComparable<XmlGraphLink>
     {
         public XmlGraphNode Target { get; private set; }
         public string Text { get; set; }
