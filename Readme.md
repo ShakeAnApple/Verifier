@@ -17,11 +17,7 @@
 ### Примечания:
 - построение автомата Бюхи по LTL формуле производится с помощью стороннего инструмента http://www.lsv.fr/~gastin/ltl2ba/index.php.
 В проекте содержатся его скомпилированные под 32-разрядные Linux и Windows исполняемые файлы.
-- места в коде такие, как
-```
-//xg.MakeXmlDocument().Save(@"v:\v.dgml");
-```
-можно раскомментировать и сохранить полученный автомат в формате .dgml для последующей визуализации
+
 
 # Сборка
 
@@ -48,13 +44,49 @@ make
   
 ### Запуск
 ```
-verifier <pathToAutomataFile>
+$ verifier -h
+Usage :
+                Verifier.exe [options]
+
+where
+
+options are
+        -m <arg>
+        --model-automaton-file <arg>
+                File with automaton for verification, otherwise interactive mode
+        -f <arg>
+        --ltl-formula <arg>
+                Ltl formula to verificate on model (if loaded), or interactive mode
+        -b <arg>
+        --batch-test <arg>
+                Run commands or Ltl formulas sequence from specified file
+        -md <arg>
+        --model-diagram <arg>
+                Save model (if loaded) automaton diagram to dgml file
+        -fd <arg>
+        --formula-diagram <arg>
+                Save Ltl formula (if presented) automaton diagram to dgml file
+        -vd <arg>
+        --verifier-diagram <arg>
+                Save virifier automaton (m and f intersection) diagram to dgml file
+        -h
+        --help
+                Show help (or just 'help' in interactive mode)
 ```
-После этого будет предложено ввести LTL формулу
+Интерактивный режим:
+```
+$ verifier
+Input LTL-formula or command (help for commands list or exit):
+> help
 
-После этого будт выведен результат проверки LTL формулы, если свойство не выполняется, то появится контрпример
+Available commands:
+    help                         - show this help
+    load <model.xstd>            - load model automaton for verification
+    run  <ltlexprs.txt>          - run commands or Ltl formulas sequence from specified file
+    save model <model.dgml>      - save last model automaton diagram to dgml file
+    save formula <formula.dgml>  - save last Ltl formula automaton diagram to dgml file
+    save verifier <verfier.dgml> - save last virifier automaton diagram to dgml file
+    exit                         - exit from interactive mode
 
-Будет снова предложено ввести LTL формулу
-
-Так будет продолжаться, пока пользователь не введет команду exit
-
+>
+```
