@@ -56,6 +56,15 @@ namespace Verifier.LtlAutomatonParser
                     var condition = target.condition.Translate(useTransitionConditions, ctx);
                     automaton.CreateTransition(state.stateName.identifier.@string, target.stateName.identifier.@string, condition);
                 }
+
+                if (state.skip != null)
+                {
+                    automaton.CreateTransition(
+                        state.stateName.identifier.@string, state.stateName.identifier.@string,
+                        useTransitionConditions ? new TlaTransitionConditionFormula(new Model.TransitionConditionExpr.ConstExpr(true))
+                                                : (TlaFormula)new TlaExprFormula(new TlaExpr.Const(true))
+                    );
+                }
             }
 
             return automaton;

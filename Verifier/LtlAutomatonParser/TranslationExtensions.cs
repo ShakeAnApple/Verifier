@@ -41,6 +41,9 @@ namespace Verifier.LtlAutomatonParser
                     FromId = st.Id,
                     Condition = t.condition.exprSeq.TranslateToConditionExpr(ctx)
                 }).ToList() : new List<Transition>();
+
+                if (state.skip != null)
+                    st.Outgoing.Add(new Transition(transitionIdCount++) { ToId = st.Id, FromId = st.Id });
             }
 
             foreach (var st in a.States)

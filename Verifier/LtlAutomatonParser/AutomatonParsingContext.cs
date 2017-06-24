@@ -37,6 +37,9 @@ namespace Verifier.LtlAutomatonParser
 
         public string EscapeOrDefault(string name, string @default)
         {
+            if (name == "true" || name == "false" || name == "1")
+                return @default;
+
             string result;
             return _escapedByOriginal.TryGetValue(name, out result) ? result : @default;
         }

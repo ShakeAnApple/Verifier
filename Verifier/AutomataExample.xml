@@ -1,5 +1,38 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <diagram>
+  <name>test</name>
+  <data>
+    <Statemachine>
+    </Statemachine>
+  </data>
+  <widget type="State" id="0">
+    <attributes>
+      <name>A</name>
+      <type>1</type>
+      <outgoing id="10"/>
+      <outgoing id="11"/>
+    </attributes>
+  </widget>
+  <widget type="State" id="1">
+    <attributes>
+      <name>B</name>
+      <incoming id="10"/>
+    </attributes>
+  </widget>
+  <widget type="State" id="2">
+    <attributes>
+      <name>C</name>
+      <incoming id="11"/>
+    </attributes>
+  </widget>
+  <widget type="Transition" id="10">
+    <attributes />
+  </widget>
+  <widget type="Transition" id="11">
+    <attributes />
+  </widget>
+</diagram>
+<!--<diagram>
   <name>Switcher</name>
   <data>
     <Statemachine>
@@ -230,4 +263,4 @@
       <outgoing id="18" />
     </attributes>
   </widget>
-</diagram>
+</diagram>-->

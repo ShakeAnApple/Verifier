@@ -2,10 +2,11 @@
 
 automaton: 'never' '{' (state)* '}';
 
-state: stateName ':' ('if' (transition)* 'fi' ';') | ('skip') | errTransition;
+state: stateName ':' ('if' (transition)* 'fi' ';') | skip | errTransition;
 
 stateName: identifier;
 errTransition: 'false';
+skip: 'skip';
 
 transition: '::' condition '->' 'goto' stateName;
 condition: exprSeq;

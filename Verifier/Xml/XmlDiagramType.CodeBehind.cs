@@ -25,7 +25,7 @@ namespace Verifier.Xml
                         Actions = t.attributes.action != null ?
                                                     t.attributes.action.Select(a => a.name).ToList()
                                                     : new List<string>(),
-                        EventName = t.attributes.@event.name,
+                        EventName = t.attributes.@event == null ? null : t.attributes.@event.name,
                         FromId = (states.FirstOrDefault(
                             innerS => innerS.attributes.outgoing == null ? false : innerS.attributes.outgoing.Select(innerT => innerT.id).Contains(t.id)
                         ) ?? new XmlWidgetType { id = st.id }).id,
@@ -37,7 +37,7 @@ namespace Verifier.Xml
                         Actions = t.attributes.action != null ?
                                                     t.attributes.action.Select(a => a.name).ToList()
                                                     : new List<string>(),
-                        EventName = t.attributes.@event.name,
+                        EventName = t.attributes.@event == null ? null : t.attributes.@event.name,
                         FromId = st.id,
                         ToId = (states.FirstOrDefault(
                             innerS => innerS.attributes.incoming == null ? false : innerS.attributes.incoming.Select(innerT => innerT.id).Contains(t.id)

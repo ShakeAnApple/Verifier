@@ -20,6 +20,7 @@ namespace Verifier.LtlAutomatonParser.TextModel
 		public stateName stateName;
 		public string[] @strings;
 		public transition[] transitions;
+		public skip skip;
 		public errTransition errTransition;
 	}
 	
@@ -30,6 +31,12 @@ namespace Verifier.LtlAutomatonParser.TextModel
 	}
 	
 	class errTransition
+	{
+		public StringTreeNode _rawTreeNode;
+		public string @string;
+	}
+	
+	class skip
 	{
 		public StringTreeNode _rawTreeNode;
 		public string @string;
@@ -132,6 +139,7 @@ namespace Verifier.LtlAutomatonParser.TextModel
 				stateName = node.Childs.Where(n => n.Rule.Name == "stateName").Select(n => MapStateName(n)).FirstOrDefault(),
 				@strings = node.Childs.Where(n => n.Childs.Count == 0).Select(n => n.Fragment.Content).ToArray(),
 				transitions = node.Childs.Where(n => n.Rule.Name == "transition").Select(n => MapTransition(n)).ToArray(),
+				skip = node.Childs.Where(n => n.Rule.Name == "skip").Select(n => MapSkip(n)).FirstOrDefault(),
 				errTransition = node.Childs.Where(n => n.Rule.Name == "errTransition").Select(n => MapErrTransition(n)).FirstOrDefault(),
 			};
 		}
@@ -147,6 +155,14 @@ namespace Verifier.LtlAutomatonParser.TextModel
 		static errTransition MapErrTransition(StringTreeNode node)
 		{
 			return new errTransition() {
+				_rawTreeNode = node,
+				@string = node.Childs.Where(n => n.Childs.Count == 0).Select(n => n.Fragment.Content).FirstOrDefault(),
+			};
+		}
+		
+		static skip MapSkip(StringTreeNode node)
+		{
+			return new skip() {
 				_rawTreeNode = node,
 				@string = node.Childs.Where(n => n.Childs.Count == 0).Select(n => n.Fragment.Content).FirstOrDefault(),
 			};

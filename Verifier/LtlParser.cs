@@ -47,6 +47,7 @@ namespace Verifier
         {
             var ctx = new AutomatonParsingContext(ltl);
             var strAutomaton = this.GetStringAutomaton(this.NegateLtl(ctx.EscapedLtl));
+            //var strAutomaton = this.GetStringAutomaton(ctx.EscapedLtl);
             var automaton = this.ParseStringAutomaton(strAutomaton, ctx);
 
             return automaton;

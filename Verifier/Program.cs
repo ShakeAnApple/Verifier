@@ -200,15 +200,23 @@ Available commands:
 
             if (_verifier != null)
             {
-                var result = _verifier.Verify(_ltlFormula);
+                var result = _verifier.Verify(_ltlFormula, true);
                 if (result != null)
                 {
                     Console.WriteLine("Specification {0} is FALSE", ltl);
                     Console.WriteLine("\tsee LTL counterexample: ");
                     foreach (var counterexample in result)
                     {
-                        if (!counterexample.Tag.ToString().Contains('|'))
-                            Console.WriteLine("\t\t" + counterexample.Tag);
+                        if (counterexample.Tag != null)
+                        {
+                            if (!counterexample.Tag.ToString().Contains('|'))
+                                Console.WriteLine("\t\t" + counterexample.Tag);
+                        }
+                        else
+                        {
+                            if (!counterexample.Name.ToString().Contains('|'))
+                                Console.WriteLine("\t\t" + counterexample.Name);
+                        }
                     }
                 }
                 else
@@ -247,7 +255,7 @@ Available commands:
                 {
                     var line = reader.ReadLine().Trim();
 
-                    if (!line.StartsWith("#") && !line.StartsWith("//"))
+                    if (!line.StartsWith("#") && !line.StartsWith("//") && !string.IsNullOrWhiteSpace(line))
                         this.PerformCommand(line);
                 }
             }
